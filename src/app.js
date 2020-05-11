@@ -1,6 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongodb = require('mongodb');
+const mongodb = require('mongodb'); // run "npm install --save mongodb" in project root
 
 const app = express();
 const port = 3000;

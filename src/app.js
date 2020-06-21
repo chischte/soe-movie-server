@@ -1,5 +1,5 @@
-const express = require('express');
-const bodyParser = require('body-parser');
+const express = require('express'); // run "npm install express" in project root
+const bodyParser = require('body-parser'); // run "npm install body-parser" in project root
 const mongodb = require('mongodb'); // run "npm install --save mongodb" in project root
 
 const app = express();

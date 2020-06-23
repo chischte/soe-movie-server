@@ -1,6 +1,7 @@
-const express = require('express'); // run "npm install express" in project root
-const bodyParser = require('body-parser'); // run "npm install body-parser" in project root
-const mongodb = require('mongodb'); // run "npm install --save mongodb" in project root
+const express = require('express');
+const bcrypt = require('bcrypt');
+const bodyParser = require('body-parser');
+const mongodb = require('mongodb');
 
 const app = express();
 const port = 3000;
@@ -8,9 +9,12 @@ const port = 3000;
 const MongoClient = mongodb.MongoClient;
 const url = "mongodb://localhost:27017";
 const dbName = 'sweWebMovieWorld';
-const collectionName = 'Favorite';
+const FavouriteCollection = 'Favourite';
+const UserCollection = 'User';
 let db = undefined;
-let collection = undefined;
+let collectionFavourite = undefined;
+let collectionUser = undefined;
+
 
 /**
  * Setup express middleware
@@ -29,7 +33,8 @@ app.use(function(req, res, next) {
 MongoClient.connect(url,{ useUnifiedTopology: true }, function(err, connection) {
     if (err) throw err;
     db = connection.db(dbName);
-    collection = db.collection(collectionName);
+    collectionFavourite = db.collection(FavouriteCollection);
+    collectionUser = db.collection(UserCollection);
 });
 
 // TODO: delete after.  is only to check if the connection to the database is established
@@ -37,11 +42,23 @@ app.get('/', (req, res) => {
     res.send('Checker');
 });
 
+
+/**
+ * Insert one User
+ */
+app.post('/signup', (req, res) => {
+    const authData = req.body;
+    collectionUser.insertOne(authData, function(err, result) {
+        if (err) throw err;
+        res.send({result: 'User Created', authData: authData});
+    });
+});
+
 /**
  * Return all Favorites
  */
 app.get('/favorite', (req, res) => {
-    collection.find({}).sort({ _id: -1 }).toArray(function(err, result) {
+    collectionFavourite.find({}).sort({ _id: -1 }).toArray(function(err, result) {
         if (err) throw err;
         res.send(result);
     });
@@ -52,7 +69,7 @@ app.get('/favorite', (req, res) => {
  */
 app.post('/favorite', (req, res) => {
     const favorite = req.body;
-    collection.insertOne(favorite, function(err, result) {
+    collectionFavourite.insertOne(favorite, function(err, result) {
         if (err) throw err;
         res.send({result: 'favorite inserted', favorite: favorite});
     });
@@ -63,7 +80,7 @@ app.post('/favorite', (req, res) => {
  */
 app.delete('/favorite/:id', (req, res) => {
     const query = { _id: new mongodb.ObjectID(req.params.id) };
-    collection.deleteOne(query, function(err, obj) {
+    collectionFavourite.deleteOne(query, function(err, obj) {
         if (err) throw err;
         res.send({result: 'favorite deleted'});
     });
@@ -75,3 +92,4 @@ app.delete('/favorite/:id', (req, res) => {
 app.listen(port, () => {
     console.log(`Favorite app listening at http://localhost:${port}`);
 });
+

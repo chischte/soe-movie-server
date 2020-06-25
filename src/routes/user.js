@@ -1,0 +1,100 @@
+const express = require('express');
+const router = express.Router();
+const User = require('../models/user');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken')
+
+
+function verifyToken(req, res, next) {
+    if(!req.headers.authorization) {
+        return res.status(401).send('Unauthorized request')
+    }
+    let token = req.headers.authorization.split(' ')[1]
+    if(token === 'null') {
+        return res.status(401).send('Unauthorized request')
+    }
+    let payload = jwt.verify(token, 'secretKey')
+    if(!payload) {
+        return res.status(401).send('Unauthorized request')
+    }
+    req.userId = payload.subject
+    next()
+}
+
+
+/**
+ * Variante eins würde auch funktionieren
+ */
+// router.post('/signup', (req, res) => {
+//     let userData = req.body
+//     let user = new User(userData)
+//     console.log(userData);
+//     user.save((err, registeredUser) => {
+//         if (err) {
+//             console.log(err)
+//         } else {
+//             let payload = {subject: registeredUser._id}
+//             let token = jwt.sign(payload, 'secretKey')
+//             res.status(200).send({token})
+//         }
+//     })
+// })
+
+router.post("/signup", (req, res, next) => {
+    bcrypt.hash(req.body.password, 10).then(hash => {
+        const user = new User({
+            email: req.body.email,
+            password: hash
+        });
+        user
+            .save()
+            .then(result => {
+                res.status(201).json({
+                    message: "User created!",
+                    result: result
+                });
+            })
+            .catch(err => {
+                res.status(500).json({
+                    error: err
+                });
+            });
+    });
+});
+
+router.post("/login", (req, res, next) => {
+    let fetchedUser;
+    User.findOne({ email: req.body.email })
+        .then(user => {
+            if (!user) {
+                return res.status(401).json({
+                    message: "Auth failed"
+                });
+            }
+            fetchedUser = user;
+            return bcrypt.compare(req.body.password, user.password);
+        })
+        .then(result => {
+            if (!result) {
+                return res.status(401).json({
+                    message: "Auth failed"
+                });
+            }
+            const token = jwt.sign(
+                { email: fetchedUser.email, userId: fetchedUser._id },
+                "secret_this_should_be_longer",
+                { expiresIn: "1h" }
+            );
+            res.status(200).json({
+                token: token,
+                expiresIn: 3600
+            });
+        })
+        .catch(err => {
+            return res.status(401).json({
+                message: "Auth failed"
+            });
+        });
+});
+
+module.exports = router;

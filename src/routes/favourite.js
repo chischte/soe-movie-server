@@ -3,18 +3,28 @@ const router = express.Router();
 const favourite = require('../models/favourite');
 
 /**
-* Return all Favorites
+* Return all Favourites
 */
-router.get('/favorite', (req, res) => {
-    favourite.find().then(documents => {
-        console.log(documents);
-        res.status(200).json({
-            message: "fetched succssfully",
-            Posts: documents
-        });
-    });
-});
+// router.get('/favorite', (req, res) => {
+//     favourite.find().then(dbFavourite => {
+//         console.log(dbFavourite);
+//         res.status(200).json({
+//             message: "fetched succssfully",
+//             Posts: dbFavourite
+//         });
+//     });
+// });
 
+router.get('/favorite', (req, res) => {
+    favourite.find({} ,function (err, result) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(result)
+            }
+        }
+    );
+});
 
 
 /**
@@ -28,23 +38,8 @@ router.post('/favorite', (req, res) => {
         if (err) throw err;
         res.send({result: 'favorite inserted', favorite: favo});
     })
-})
+});
 
-
-// router.post('/signup', (req, res) => {
-//     let userData = req.body
-//     let user = new User(userData)
-//     console.log(userData);
-//     user.save((err, registeredUser) => {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             let payload = {subject: registeredUser._id}
-//             let token = jwt.sign(payload, 'secretKey')
-//             res.status(200).send({token})
-//         }
-//     })
-// })
 
 // /**
 //  * Delete Favorite by id

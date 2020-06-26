@@ -5,7 +5,6 @@ const favourite = require('../models/favourite');
 /**
 * Return all Favourites
 */
-
 router.get('/favorite', (req, res) => {
     favourite.find({} ,function (err, result) {
             if (err) {
@@ -14,9 +13,8 @@ router.get('/favorite', (req, res) => {
                 res.json(result)
             }
         }
-    );
+    ).sort({ _id: -1 });
 });
-
 
 /**
  * Insert one Favorite

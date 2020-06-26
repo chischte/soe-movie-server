@@ -15,7 +15,6 @@ app.use(express.static(path.join(__dirname, 'dist')));
 
 mongoose.connect('mongodb://localhost:27017/sweWebMovieWorld', {useNewUrlParser: true});
 
-
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
@@ -29,7 +28,6 @@ app.use((req, res, next) => {
     next();
 });
 
-
 app.use(bodyParser.json());
 
 // app.use('/api', api);
@@ -39,9 +37,6 @@ app.use("/api/user", userRoutes);
 
 module.exports = app;
 
-// app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, 'dist/index.html'));
-// });
 
 app.listen(port, function(){
     console.log("Server running on localhost:" + port);

@@ -23,23 +23,8 @@ function verifyToken(req, res, next) {
 
 
 /**
- * Variante eins würde auch funktionieren
+ * Create a new User in the Database
  */
-// router.post('/signup', (req, res) => {
-//     let userData = req.body
-//     let user = new User(userData)
-//     console.log(userData);
-//     user.save((err, registeredUser) => {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             let payload = {subject: registeredUser._id}
-//             let token = jwt.sign(payload, 'secretKey')
-//             res.status(200).send({token})
-//         }
-//     })
-// })
-
 router.post("/signup", (req, res, next) => {
     bcrypt.hash(req.body.password, 10).then(hash => {
         const user = new User({
@@ -62,6 +47,10 @@ router.post("/signup", (req, res, next) => {
     });
 });
 
+
+/**
+ * Is the user in the Database then Login
+ */
 router.post("/login", (req, res, next) => {
     let fetchedUser;
     User.findOne({ email: req.body.email })

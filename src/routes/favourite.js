@@ -7,8 +7,8 @@ const checkAuth = require('../middleware/check-auth')
 /**
 * Return all Favourites
 */
-router.get('/favorite', (req, res) => {
-    favourite.find({} ,function (err, result) {
+router.get('/favorite',checkAuth, (req, res) => {
+    favourite.find({creator: req.userData.userId} ,function (err, result) {
             if (err) {
                 res.send(err);
             } else {
@@ -22,9 +22,11 @@ router.get('/favorite', (req, res) => {
  * Insert one Favorite
  */
 router.post('/favorite',checkAuth, (req, res) => {
-    let favouriteData = req.body;
-    let favo = new favourite(favouriteData)
-    console.log(favo);
+    let favo = new favourite({
+        movieName: req.body.movieName,
+        additionalNotes: req.body.additionalNotes,
+        creator: req.userData.userId
+    })
     favo.save((err, registeredUser) => {
         if (err) throw err;
         res.send({result: 'favorite inserted', favorite: favo});

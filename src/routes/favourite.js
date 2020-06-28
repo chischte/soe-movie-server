@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const favourite = require('../models/favourite');
 
+const checkAuth = require('../middleware/check-auth')
+
 /**
 * Return all Favourites
 */
@@ -19,7 +21,7 @@ router.get('/favorite', (req, res) => {
 /**
  * Insert one Favorite
  */
-router.post('/favorite', (req, res) => {
+router.post('/favorite',checkAuth, (req, res) => {
     let favouriteData = req.body;
     let favo = new favourite(favouriteData)
     console.log(favo);

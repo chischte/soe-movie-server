@@ -5,27 +5,28 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
 
 
-function verifyToken(req, res, next) {
-    if(!req.headers.authorization) {
-        return res.status(401).send('Unauthorized request')
-    }
-    let token = req.headers.authorization.split(' ')[1]
-    if(token === 'null') {
-        return res.status(401).send('Unauthorized request')
-    }
-    let payload = jwt.verify(token, 'secretKey')
-    if(!payload) {
-        return res.status(401).send('Unauthorized request')
-    }
-    req.userId = payload.subject
-    next()
-}
+// function verifyToken(req, res, next) {
+//     if(!req.headers.authorization) {
+//         return res.status(401).send('Unauthorized request')
+//     }
+//     let token = req.headers.authorization.split(' ')[1]
+//     if(token === 'null') {
+//         return res.status(401).send('Unauthorized request')
+//     }
+//     let payload = jwt.verify(token, 'secretKey')
+//     if(!payload) {
+//         return res.status(401).send('Unauthorized request')
+//     }
+//     req.userId = payload.subject
+//     next()
+// }
 
 
 /**
  * Create a new User in the Database
  */
 router.post("/signup", (req, res, next) => {
+    console.log("das ist das gespeicherte passwort" + req.body.email, req.body.password)
     bcrypt.hash(req.body.password, 10).then(hash => {
         const user = new User({
             email: req.body.email,
@@ -53,8 +54,10 @@ router.post("/signup", (req, res, next) => {
  */
 router.post("/login", (req, res, next) => {
     let fetchedUser;
+    console.log("das ist das gespeicherte passwort" + req.body.email, req.body.password)
     User.findOne({ email: req.body.email })
         .then(user => {
+            console.log(user);
             if (!user) {
                 return res.status(401).json({
                     message: "Auth failed"

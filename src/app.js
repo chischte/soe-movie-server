@@ -13,7 +13,8 @@ const app = express();
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'dist')));
 
-mongoose.connect('mongodb://localhost:27017/sweWebMovieWorld', {useNewUrlParser: true});
+mongoose.connect('mongodb://localhost:27017/sweWebMovieWorld', {useCreateIndex:true, useNewUrlParser: true, useUnifiedTopology: true});
+
 
 app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");

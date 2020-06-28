@@ -1,0 +1,8 @@
+{
+  "name": "Datenbank_MoviworldSoW",
+  "version": "1.0.0",
+  "dependencies": {
+    "mongoose": "^5.9.20",
+    "mongoose-unique-validator": "^2.0.3"
+  }
+}

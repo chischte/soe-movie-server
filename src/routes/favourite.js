@@ -22,14 +22,19 @@ router.get('/favorite',checkAuth, (req, res) => {
  * Insert one Favorite
  */
 router.post('/favorite',checkAuth, (req, res) => {
-    let favo = new favourite({
+    let favorite = new favourite({
+        genreId: req.body.genreId,
+        language: req.body.language,
         movieName: req.body.movieName,
+        releaseDate: req.body.releaseDate,
+        teaserText: req.body.teaserText,
+        title: req.body.title,
         additionalNotes: req.body.additionalNotes,
         creator: req.userData.userId
     })
-    favo.save((err, registeredUser) => {
+    favorite.save((err, registeredUser) => {
         if (err) throw err;
-        res.send({result: 'favorite inserted', favorite: favo});
+        res.send({result: 'favorite inserted', favorite: favorite});
     })
 });
 
